@@ -60,7 +60,7 @@ Modifier `VERSION` dans `js/version.js` **et** dans `sw.js` (même valeur), puis
 
 | Fichier | Rôle |
 | --- | --- |
-| `index.html`, `css/app.css` | Interface et mise en page d'impression A4 |
+| `index.html`, `css/app.css` | Interface (jetons communs de la suite, `WebAedificium/DESIGN.md`, thème clair) et mise en page d'impression A4 |
 | `js/engine.js` | Moteur de calcul, traduction fidèle des formules du classeur ; clés = noms définis |
 | `js/report.js` | Lignes des pages de calcul (désignation, symbole, formule, référence) |
 | `js/tables.js` | Tables T1 à T10 et catalogue par défaut |
@@ -83,4 +83,4 @@ Code de l'application : licence MIT (`LICENSE` à la racine du dépôt).
 
 ### Composants tiers
 
-Polices IBM Plex : SIL Open Font License 1.1 (`fonts/OFL.txt`). SheetJS Community Edition : Apache 2.0 (`lib/xlsx-LICENSE.txt`).
+SheetJS Community Edition : Apache 2.0 (`lib/xlsx-LICENSE.txt`).

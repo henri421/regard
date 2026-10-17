@@ -1,6 +1,6 @@
 {
   "name": "regard-maconnerie",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "description": "Vérification des regards en maçonnerie enterrée (EN 1996-1-1, EN 1996-3, EN 1997-1). Application web hors ligne.",
