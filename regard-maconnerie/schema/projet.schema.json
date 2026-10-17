@@ -1,0 +1,477 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "projet.schema.json",
+  "title": "Projet de vérification d'un regard en maçonnerie enterrée",
+  "description": "Fichier projet de l'application webaedificium / regard-maconnerie. Les noms des saisies sont ceux du classeur sans le préfixe in_.",
+  "type": "object",
+  "required": [
+    "format",
+    "inputs"
+  ],
+  "properties": {
+    "format": {
+      "const": "webaedificium/regard-maconnerie"
+    },
+    "formatVersion": {
+      "type": "integer"
+    },
+    "app": {
+      "type": "string",
+      "description": "Version de l'application qui a enregistré le fichier"
+    },
+    "saved": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "projet": {
+          "title": "Projet",
+          "description": "A. Projet",
+          "default": "Regard type (exemple)",
+          "type": "string"
+        },
+        "ref": {
+          "title": "Référence",
+          "description": "A. Projet",
+          "default": "BE-2026-000",
+          "type": "string"
+        },
+        "ind": {
+          "title": "Indice",
+          "description": "A. Projet",
+          "default": "A",
+          "type": "string"
+        },
+        "date": {
+          "title": "Date du calcul",
+          "description": "A. Projet",
+          "default": "2026-10-15",
+          "type": "string",
+          "format": "date"
+        },
+        "auteur": {
+          "title": "Auteur",
+          "description": "A. Projet",
+          "default": "",
+          "type": "string"
+        },
+        "mode": {
+          "title": "Mode de saisie de la géométrie",
+          "description": "B. Géométrie",
+          "default": "Dimensions",
+          "enum": [
+            "Dimensions",
+            "Cotes"
+          ]
+        },
+        "a": {
+          "title": "Longueur intérieure (grands murs)",
+          "description": "B. Géométrie ; symbole a ; unité m ; a ≥ b",
+          "default": 1.5,
+          "type": "number"
+        },
+        "b": {
+          "title": "Largeur intérieure (petits murs)",
+          "description": "B. Géométrie ; symbole b ; unité m",
+          "default": 1.5,
+          "type": "number"
+        },
+        "tgm": {
+          "title": "Épaisseur des grands murs",
+          "description": "B. Géométrie ; symbole t1 ; unité m",
+          "default": 0.24,
+          "type": "number"
+        },
+        "tpm": {
+          "title": "Épaisseur des petits murs",
+          "description": "B. Géométrie ; symbole t2 ; unité m",
+          "default": 0.24,
+          "type": "number"
+        },
+        "td": {
+          "title": "Épaisseur de la dalle supérieure",
+          "description": "B. Géométrie ; symbole td ; unité m",
+          "default": 0.2,
+          "type": "number"
+        },
+        "tr": {
+          "title": "Épaisseur du radier",
+          "description": "B. Géométrie ; symbole tr ; unité m",
+          "default": 0.2,
+          "type": "number"
+        },
+        "at": {
+          "title": "Ouverture du tampon, côté // a",
+          "description": "B. Géométrie ; symbole at ; unité m ; centrée, alignée",
+          "default": 0.6,
+          "type": "number"
+        },
+        "bt": {
+          "title": "Ouverture du tampon, côté // b",
+          "description": "B. Géométrie ; symbole bt ; unité m",
+          "default": 0.6,
+          "type": "number"
+        },
+        "hl": {
+          "title": "Hauteur libre intérieure",
+          "description": "B. Géométrie ; symbole hl ; unité m",
+          "default": 2.5,
+          "type": "number"
+        },
+        "ec": {
+          "title": "Recouvrement sur dalle",
+          "description": "B. Géométrie ; symbole ec ; unité m ; chaussée comprise",
+          "default": 0.3,
+          "type": "number"
+        },
+        "ZTN": {
+          "title": "Cote du terrain fini",
+          "description": "B. Géométrie ; symbole ZTN ; unité m NGL",
+          "default": 300,
+          "type": "number"
+        },
+        "Zd": {
+          "title": "Cote du dessus de dalle",
+          "description": "B. Géométrie ; symbole Zd ; unité m NGL",
+          "default": 299.7,
+          "type": "number"
+        },
+        "Zr": {
+          "title": "Cote du dessus de radier",
+          "description": "B. Géométrie ; symbole Zr ; unité m NGL",
+          "default": 297,
+          "type": "number"
+        },
+        "gam_sol": {
+          "title": "Poids volumique du remblai",
+          "description": "C. Sol ; symbole γ ; unité kN/m³",
+          "default": 20,
+          "type": "number"
+        },
+        "gam_dej": {
+          "title": "Poids volumique déjaugé",
+          "description": "C. Sol ; symbole γ' ; unité kN/m³",
+          "default": 10,
+          "type": "number"
+        },
+        "phi_sol": {
+          "title": "Angle de frottement interne",
+          "description": "C. Sol ; symbole φ' ; unité °",
+          "default": 30,
+          "type": "number"
+        },
+        "c_sol": {
+          "title": "Cohésion (non exploitée en v1)",
+          "description": "C. Sol ; symbole c' ; unité kPa",
+          "default": 0,
+          "type": "number"
+        },
+        "beta_sol": {
+          "title": "Inclinaison du terrain",
+          "description": "C. Sol ; symbole βs ; unité °",
+          "default": 0,
+          "type": "number"
+        },
+        "Kchoix": {
+          "title": "Coefficient de poussée retenu",
+          "description": "C. Sol ; K0 : mur tenu par la dalle ; EN 1997-1 §9.5",
+          "default": "K0",
+          "enum": [
+            "K0",
+            "Ka"
+          ]
+        },
+        "comp": {
+          "title": "Pression de compactage active",
+          "description": "C. Sol",
+          "default": "Non",
+          "enum": [
+            "Non",
+            "Oui"
+          ]
+        },
+        "sigc": {
+          "title": "Pression de compactage",
+          "description": "C. Sol ; symbole σc ; unité kPa ; uniforme sur la hauteur",
+          "default": 15,
+          "type": "number"
+        },
+        "nappe": {
+          "title": "Présence d'une nappe",
+          "description": "D. Nappe",
+          "default": "Non",
+          "enum": [
+            "Non",
+            "Oui"
+          ]
+        },
+        "zw": {
+          "title": "Profondeur de la nappe",
+          "description": "D. Nappe ; symbole zw ; unité m",
+          "default": 2,
+          "type": "number"
+        },
+        "Zn": {
+          "title": "Cote de la nappe",
+          "description": "D. Nappe ; symbole Zw ; unité m NGL",
+          "default": 298,
+          "type": "number"
+        },
+        "MX": {
+          "title": "Classe d'exposition",
+          "description": "E. Matériaux ; EN 1996-2 annexe A",
+          "default": "MX3",
+          "enum": [
+            "MX1",
+            "MX2",
+            "MX3",
+            "MX4",
+            "MX5"
+          ]
+        },
+        "elem": {
+          "title": "Élément de maçonnerie",
+          "description": "E. Matériaux",
+          "default": "BBP20-24",
+          "type": "string"
+        },
+        "mort": {
+          "title": "Mortier",
+          "description": "E. Matériaux",
+          "default": "M10-G",
+          "type": "string"
+        },
+        "cls": {
+          "title": "Classe d'exécution",
+          "description": "E. Matériaux ; fixe γM (T1) ; EN 1996-1-1 Tab. 2.3",
+          "default": 5,
+          "enum": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        "gmac": {
+          "title": "Poids volumique de la maçonnerie",
+          "description": "E. Matériaux ; symbole γmaç ; unité kN/m³",
+          "default": 20,
+          "type": "number"
+        },
+        "ech": {
+          "title": "Épaisseur de chaussée (comprise dans ec)",
+          "description": "E. Matériaux ; symbole ech ; unité m",
+          "default": 0.1,
+          "type": "number"
+        },
+        "gch": {
+          "title": "Poids volumique de la chaussée",
+          "description": "E. Matériaux ; symbole γch ; unité kN/m³",
+          "default": 24,
+          "type": "number"
+        },
+        "liaison": {
+          "title": "Liaison en pied de mur",
+          "description": "E. Matériaux",
+          "default": "Joint de mortier",
+          "enum": [
+            "Joint de mortier",
+            "Relevé béton"
+          ]
+        },
+        "chemin": {
+          "title": "Chemin de charge retenu pour le verdict",
+          "description": "F. Options de calcul",
+          "default": "Voûte horizontale",
+          "enum": [
+            "Voûte horizontale",
+            "Bande verticale",
+            "Plaque"
+          ]
+        },
+        "la": {
+          "title": "Portée de la voûte horizontale",
+          "description": "F. Options de calcul ; entre axes : prudent ; EN 1996-1-1 §6.3.2",
+          "default": "Entre axes",
+          "enum": [
+            "Entre axes",
+            "Libre"
+          ]
+        },
+        "harpe": {
+          "title": "Angles harpés ou butées capables de la poussée",
+          "description": "F. Options de calcul ; EN 1996-1-1 §6.3.2",
+          "default": "Oui",
+          "enum": [
+            "Oui",
+            "Non"
+          ]
+        },
+        "kpar": {
+          "title": "Résistance parallèle / perpendiculaire aux joints",
+          "description": "F. Options de calcul ; symbole kpar ; 1,0 pour éléments pleins",
+          "default": 1,
+          "type": "number"
+        },
+        "pen": {
+          "title": "Pénétration de canalisation",
+          "description": "F. Options de calcul ; tranches exclues de la voûte",
+          "default": "Aucune",
+          "enum": [
+            "Aucune",
+            "Grand mur",
+            "Petit mur",
+            "Les deux"
+          ]
+        },
+        "zp1": {
+          "title": "Pénétration : profondeur du haut",
+          "description": "F. Options de calcul ; symbole zp1 ; unité m",
+          "default": 1.5,
+          "type": "number"
+        },
+        "zp2": {
+          "title": "Pénétration : profondeur du bas",
+          "description": "F. Options de calcul ; symbole zp2 ; unité m",
+          "default": 1.9,
+          "type": "number"
+        },
+        "c3": {
+          "title": "Vérifier la phase provisoire C3 (remblai avant dalle)",
+          "description": "F. Options de calcul",
+          "default": "Oui",
+          "enum": [
+            "Oui",
+            "Non"
+          ]
+        },
+        "su": {
+          "title": "Principe de source unique",
+          "description": "F. Options de calcul ; Oui : γG,sup aussi sur les terres stabilisantes ; EN 1990 §6.4.3",
+          "default": "Non",
+          "enum": [
+            "Non",
+            "Oui"
+          ]
+        },
+        "mod": {
+          "title": "Modèle de charge",
+          "description": "G. Chargement ; T8",
+          "default": "SLW 60",
+          "enum": [
+            "SLW 60",
+            "LM1",
+            "Utilisateur"
+          ]
+        },
+        "pos": {
+          "title": "Position de la charge",
+          "description": "G. Chargement",
+          "default": "À côté du regard",
+          "enum": [
+            "À côté du regard",
+            "Sur la dalle (hors tampon)",
+            "Sur le tampon",
+            "À cheval"
+          ]
+        },
+        "optlat": {
+          "title": "Poussée due au trafic adjacent",
+          "description": "G. Chargement ; NAVFAC DM 7.02",
+          "default": "Surcharge équivalente",
+          "enum": [
+            "Surcharge équivalente",
+            "Boussinesq"
+          ]
+        },
+        "d": {
+          "title": "Distance roue la plus proche / parement",
+          "description": "G. Chargement ; symbole d ; unité m",
+          "default": 0.5,
+          "type": "number"
+        },
+        "theta": {
+          "title": "Angle de diffusion dans le recouvrement",
+          "description": "G. Chargement ; symbole θ ; unité ° ; 30° pour un remblai",
+          "default": 30,
+          "type": "number"
+        },
+        "trans": {
+          "title": "Transmission de la dalle aux murs",
+          "description": "G. Chargement",
+          "default": "Aires tributaires",
+          "enum": [
+            "Aires tributaires",
+            "Charge linéaire saisie"
+          ]
+        },
+        "nroues": {
+          "title": "Nombre de roues sur la dalle",
+          "description": "G. Chargement ; symbole nr ; positions sur dalle ou tampon",
+          "default": 2,
+          "type": "number"
+        },
+        "qu": {
+          "title": "Utilisateur : surcharge sur remblai",
+          "description": "G. Chargement ; symbole qu ; unité kPa",
+          "default": 10,
+          "type": "number"
+        },
+        "P": {
+          "title": "Utilisateur : charge ponctuelle par roue",
+          "description": "G. Chargement ; symbole P ; unité kN",
+          "default": 50,
+          "type": "number"
+        },
+        "a0": {
+          "title": "Utilisateur : empreinte transversale",
+          "description": "G. Chargement ; symbole a0 ; unité m",
+          "default": 0.4,
+          "type": "number"
+        },
+        "b0": {
+          "title": "Utilisateur : empreinte longitudinale",
+          "description": "G. Chargement ; symbole b0 ; unité m",
+          "default": 0.4,
+          "type": "number"
+        },
+        "qd": {
+          "title": "Utilisateur : charge répartie sur la dalle",
+          "description": "G. Chargement ; symbole qd ; unité kPa",
+          "default": 0,
+          "type": "number"
+        },
+        "nugm": {
+          "title": "Charge linéaire spéciale, grands murs (variable)",
+          "description": "G. Chargement ; symbole nu,1 ; unité kN/m ; s'ajoute à la transmission",
+          "default": 0,
+          "type": "number"
+        },
+        "nupm": {
+          "title": "Charge linéaire spéciale, petits murs (variable)",
+          "description": "G. Chargement ; symbole nu,2 ; unité kN/m ; s'ajoute à la transmission",
+          "default": 0,
+          "type": "number"
+        },
+        "eu": {
+          "title": "Excentricité de la charge linéaire spéciale",
+          "description": "G. Chargement ; symbole eu ; unité m ; par rapport à l'axe du mur",
+          "default": 0,
+          "type": "number"
+        }
+      },
+      "additionalProperties": false
+    },
+    "tables": {
+      "type": "object",
+      "description": "Tables T1 à T10 (voir js/tables.js)"
+    },
+    "catalogue": {
+      "type": "object",
+      "description": "Éléments, mortiers et ciments (voir js/tables.js)"
+    }
+  }
+}

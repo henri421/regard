@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Regards en maçonnerie</title>
+<meta name="description" content="Vérification des murs de regards enterrés en maçonnerie non armée sous poussée des terres et trafic (EN 1996-1-1, EN 1996-3, EN 1997-1). Calcul local dans le navigateur.">
+<meta name="theme-color" content="#1a222c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preload" href="fonts/ibm-plex-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="titleblock">
+    <div class="tb-name">
+      <h1>Regards en maçonnerie</h1>
+      <p>Murs enterrés non armés · EN 1996-1-1, EN 1996-3, EN 1997-1 · <span id="ver"></span></p>
+    </div>
+    <div class="tb-cells">
+      <div class="tb-cell"><span class="k">Projet</span><span class="v" id="tb-projet"></span></div>
+      <div class="tb-cell"><span class="k">Référence</span><span class="v" id="tb-ref"></span></div>
+      <div class="tb-cell"><span class="k">Indice</span><span class="v" id="tb-ind"></span></div>
+      <div class="tb-cell"><span class="k">Date</span><span class="v" id="tb-date"></span></div>
+      <div class="tb-cell"><span class="k">Auteur</span><span class="v" id="tb-auteur"></span></div>
+      <div class="tb-cell"><span class="k">Modèle</span><span class="v" id="tb-mod"></span></div>
+    </div>
+  </header>
+
+  <div class="toolbar noprint" role="toolbar" aria-label="Fichier">
+    <button class="btn" id="b-new" type="button">Nouveau</button>
+    <button class="btn" id="b-open" type="button">Ouvrir…</button>
+    <button class="btn" id="b-save" type="button">Enregistrer</button>
+    <button class="btn" id="b-xlsx" type="button">Importer un classeur .xlsx…</button>
+    <span class="sp"></span>
+    <span class="toast" id="toast" role="status" aria-live="polite"></span>
+    <button class="btn primary" id="b-print" type="button">Imprimer la note</button>
+    <input type="file" id="f-open" accept=".json,application/json" hidden>
+    <input type="file" id="f-xlsx" accept=".xlsx,.xlsm" hidden>
+  </div>
+
+  <div class="error" id="err" role="alert" hidden></div>
+
+  <section class="verdicts noprint" aria-label="Verdict de la méthode complète">
+    <article class="wallcard" id="vc-gm"></article>
+    <article class="wallcard" id="vc-pm"></article>
+  </section>
+
+  <nav class="tabs noprint" role="tablist" aria-label="Feuilles de calcul">
+    <button class="tab" role="tab" data-tab="saisie" aria-selected="true"><span class="no">0</span>Saisie</button>
+    <button class="tab" role="tab" data-tab="coef" aria-selected="false"><span class="no">1</span>Coefficients</button>
+    <button class="tab" role="tab" data-tab="cat" aria-selected="false"><span class="no">2</span>Catalogue</button>
+    <button class="tab" role="tab" data-tab="predim" aria-selected="false"><span class="no">3</span>Prédim.</button>
+    <button class="tab" role="tab" data-tab="classique" aria-selected="false"><span class="no">4</span>Classique</button>
+    <button class="tab" role="tab" data-tab="complete" aria-selected="false"><span class="no">5</span>Complète</button>
+    <button class="tab" role="tab" data-tab="synthese" aria-selected="false"><span class="no">6</span>Synthèse</button>
+  </nav>
+
+  <main>
+    <section class="page note" id="p-saisie" data-tab="saisie" role="tabpanel">
+      <div class="page-head" data-head="0_Saisie : données d'entrée et actions"></div>
+      <h2>Données d'entrée et actions</h2>
+      <p class="lede">Champs gris à encre bleue : saisie. Les autres valeurs sont calculées et mises à jour à chaque modification. Rien ne quitte ce navigateur.</p>
+      <div class="scroll"><table class="calc" id="t-saisie"></table></div>
+      <div id="saisie-derived"></div>
+    </section>
+    <section class="page" id="p-coef" data-tab="coef" role="tabpanel" hidden></section>
+    <section class="page" id="p-cat" data-tab="cat" role="tabpanel" hidden></section>
+    <section class="page note" id="p-predim" data-tab="predim" role="tabpanel" hidden></section>
+    <section class="page note" id="p-classique" data-tab="classique" role="tabpanel" hidden></section>
+    <section class="page note" id="p-complete" data-tab="complete" role="tabpanel" hidden></section>
+    <section class="page note" id="p-synthese" data-tab="synthese" role="tabpanel" hidden></section>
+  </main>
+
+  <footer class="foot noprint">
+    <span>Calcul exécuté localement. Projet enregistré dans ce navigateur et dans les fichiers .json que vous exportez.</span>
+    <span id="foot-ver"></span>
+  </footer>
+</div>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
