@@ -1,6 +1,6 @@
 // Service worker : application disponible hors ligne (cache de l'ensemble des fichiers).
 // Modifier VERSION à chaque publication (même valeur que js/version.js) pour que les postes se mettent à jour.
-const VERSION = "1.2.0";
+const VERSION = "1.3.0";
 const CACHE = `regard-maconnerie-${VERSION}`;
 const FILES = [
   "./", "index.html", "manifest.webmanifest", "css/app.css",

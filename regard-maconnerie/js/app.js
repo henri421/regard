@@ -69,7 +69,7 @@ function sheet(sections, two) {
   return `<div class="scroll"><table class="calc">${h}</tbody></table></div>`;
 }
 
-// ---------------------------------------------------------------- page Saisie (formulaire)
+// ---------------------------------------------------------------- saisie (formulaire en cadres, comme les autres outils de la suite)
 function optionsFor(f) {
   if (f.opts === "elements") return state.catalogue.elements.map(e => e[0]);
   if (f.opts === "mortiers") return state.catalogue.mortiers.map(e => e[0]);
@@ -79,24 +79,40 @@ function control(f) {
   const v = state.inputs[f.name], id = `in-${f.name}`;
   if (f.type === "select") {
     const opts = optionsFor(f);
-    return `<select class="inp" id="${id}" data-in="${f.name}">${opts.map(o => `<option value="${esc(o)}"${String(o) === String(v) ? " selected" : ""}>${esc(o)}</option>`).join("")}</select>`;
+    return `<select id="${id}" data-in="${f.name}">${opts.map(o => `<option value="${esc(o)}"${String(o) === String(v) ? " selected" : ""}>${esc(o)}</option>`).join("")}</select>`;
   }
-  if (f.type === "date") return `<input class="inp wide" type="date" id="${id}" data-in="${f.name}" value="${esc(v)}">`;
-  if (f.type === "text") return `<input class="inp wide" type="text" id="${id}" data-in="${f.name}" value="${esc(v)}" autocomplete="off">`;
-  return `<input class="inp" type="text" inputmode="decimal" id="${id}" data-in="${f.name}" value="${esc(toStr(v))}" autocomplete="off" spellcheck="false">`;
+  if (f.type === "date") return `<input type="date" id="${id}" data-in="${f.name}" value="${esc(v)}">`;
+  if (f.type === "text") return `<input type="text" id="${id}" data-in="${f.name}" value="${esc(v)}" autocomplete="off">`;
+  return `<input type="text" inputmode="decimal" id="${id}" data-in="${f.name}" value="${esc(toStr(v))}" autocomplete="off" spellcheck="false">`;
 }
 function buildSaisie() {
-  let h = `<thead><tr><th>Désignation</th><th>Symbole</th><th class="c-val">Valeur</th><th>Unité</th><th class="c-fx">Formule / note</th><th class="c-ref">Référence</th></tr></thead><tbody>`;
-  for (const g of GROUPS) {
-    h += `<tr class="sec"><td colspan="6">${esc(g.title)}</td></tr>`;
-    for (const f of g.fields)
-      h += `<tr data-row="${f.name}"><td><label for="in-${f.name}">${esc(f.label)}</label></td><td class="c-sym">${esc(f.sym || "")}</td><td class="inpcell">${control(f)}</td><td class="c-unit">${esc(f.unit || "")}</td><td class="c-fx">${esc(f.note || "")}</td><td class="c-ref">${esc(f.ref || "")}</td></tr>`;
-  }
-  $("#t-saisie").innerHTML = h + "</tbody>";
+  $("#saisie").innerHTML = GROUPS.map(g => `<fieldset><legend>${esc(g.title.replace(/^[A-Z]\.\s*/, ""))}</legend>${g.fields.map(f => {
+    const aide = [f.note, f.ref].filter(Boolean).join(" · ");
+    const lib = `${esc(f.label)}${f.sym ? ` <i class="sym">${esc(f.sym)}</i>` : ""}`;
+    return `<label data-row="${f.name}"${aide ? ` title="${esc(aide)}"` : ""}><span>${lib}</span>${control(f)}<em class="u">${esc(f.unit || "")}</em></label>${f.note ? `<p class="aide" data-aide="${f.name}">${esc(f.note)}</p>` : ""}`;
+  }).join("")}</fieldset>`).join("");
   visibility();
 }
 function visibility() {
-  for (const f of FIELDS) if (f.show) document.querySelector(`tr[data-row="${f.name}"]`).hidden = !f.show(state.inputs);
+  for (const f of FIELDS) if (f.show) {
+    const hide = !f.show(state.inputs);
+    document.querySelector(`label[data-row="${f.name}"]`).hidden = hide;
+    const a = document.querySelector(`[data-aide="${f.name}"]`); if (a) a.hidden = hide;
+  }
+}
+// Récapitulatif imprimé des données d'entrée (feuille 0_Saisie de la note)
+function saisieRecap() {
+  const I = state.inputs;
+  let h = `<thead><tr><th>Désignation</th><th>Symbole</th><th class="c-val">Valeur</th><th>Unité</th><th class="c-fx">Note</th><th class="c-ref">Référence</th></tr></thead><tbody>`;
+  for (const g of GROUPS) {
+    h += `<tr class="sec"><td colspan="6">${esc(g.title)}</td></tr>`;
+    for (const f of g.fields) {
+      if (f.show && !f.show(I)) continue;
+      const v = f.type === "num" ? fmt(Number(I[f.name]), 2) : f.type === "date" && I[f.name] ? new Date(I[f.name] + "T12:00:00").toLocaleDateString("fr-FR") : I[f.name];
+      h += `<tr><td>${esc(f.label)}</td><td class="c-sym">${esc(f.sym || "")}</td><td class="c-val${f.type === "num" ? "" : " txt"}">${esc(v)}</td><td class="c-unit">${esc(f.unit || "")}</td><td class="c-fx">${esc(f.note || "")}</td><td class="c-ref">${esc(f.ref || "")}</td></tr>`;
+    }
+  }
+  $("#t-saisie").innerHTML = h + "</tbody>";
 }
 function refreshCatalogueSelects() {
   for (const name of ["elem", "mort"]) {
@@ -107,7 +123,7 @@ function refreshCatalogueSelects() {
     else { state.inputs[name] = opts[0]; el.value = opts[0]; }
   }
 }
-$("#t-saisie").addEventListener("input", e => {
+$("#saisie").addEventListener("input", e => {
   const el = e.target, name = el.dataset.in;
   if (!name) return;
   const f = FIELDS.find(x => x.name === name);
@@ -253,6 +269,74 @@ function plot(pts, key, title, unit, d) {
   </svg></figure>`;
 }
 
+// ---------------------------------------------------------------- coupe du regard (perpendiculaire aux grands murs)
+function coupe(V, I, slices) {
+  const W = 400, H = 330, mg = { l: 16, r: 16, t: 46, b: 16 };
+  const B = V.B_ext, t1 = +I.tgm, ec = V.ec, td = +I.td, tr = +I.tr, z1 = V.z_tete, z2 = V.z_pied, zb = z2 + tr;
+  const cote = Math.max(0.7, 0.45 * B), Wm = B + 2 * cote, Hm = zb + 0.25;
+  const s = Math.min((W - mg.l - mg.r) / Wm, (H - mg.t - mg.b) / Hm);
+  const x0 = (W - Wm * s) / 2 + cote * s, X = x => x0 + x * s, Y = z => mg.t + z * s;
+  const r = (x, z, w, h, c) => `<rect class="${c}" x="${X(x).toFixed(1)}" y="${Y(z).toFixed(1)}" width="${(w * s).toFixed(1)}" height="${(h * s).toFixed(1)}"/>`;
+  const txt = (x, y, t, a = "middle", c = "") => `<text class="${c}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${a}">${esc(t)}</text>`;
+  let g = "";
+  // terrain, remblai et nappe
+  g += `<rect class="sol" x="${X(-cote)}" y="${Y(0)}" width="${Wm * s}" height="${Hm * s}"/>`;
+  const zw = V.z_nap;
+  if (I.nappe === "Oui" && zw < Hm) g += `<rect class="eau" x="${X(-cote)}" y="${Y(zw)}" width="${Wm * s}" height="${(Hm - zw) * s}"/><line class="nappe" x1="${X(-cote)}" x2="${X(B + cote)}" y1="${Y(zw)}" y2="${Y(zw)}"/>${txt(X(B + cote) - 4, Y(zw) - 4, `nappe ${fmt(zw, 2)} m`, "end")}`;
+  g += `<line class="tn" x1="${X(-cote)}" x2="${X(B + cote)}" y1="${Y(0)}" y2="${Y(0)}"/>`;
+  // ouvrage : murs, dalle percée du tampon, radier, vide intérieur
+  g += r(t1, z1, B - 2 * t1, z2 - z1, "vide");
+  const bt = Math.min(+I.bt, B - 2 * t1), xa = (B - bt) / 2;
+  g += r(0, ec, xa, td, "beton") + r(xa + bt, ec, B - xa - bt, td, "beton") + r(0, z2, B, tr, "beton");
+  g += r(0, z1, t1, z2 - z1, "maco") + r(B - t1, z1, t1, z2 - z1, "maco");
+  // poussée de calcul sur les deux parements
+  const pmax = Math.max(...slices.map(q => q.pEd), 1e-9), L = Math.min(cote * 0.8, 0.9) * s;
+  const fl = (xf, dir, z, p) => { const len = Math.max(p / pmax * L, 3), xs = xf + dir * len; return `<line class="pf" x1="${xs.toFixed(1)}" x2="${xf.toFixed(1)}" y1="${Y(z).toFixed(1)}" y2="${Y(z).toFixed(1)}"/><path class="pt" d="M${xf.toFixed(1)},${Y(z).toFixed(1)} l${(dir * 5).toFixed(1)},-3 l0,6 z"/>`; };
+  for (const q of slices.filter((_, j) => j % 2 === 0)) g += fl(X(0), -1, q.z, q.pEd) + fl(X(B), 1, q.z, q.pEd);
+  const env = side => slices.map(q => `${(side < 0 ? X(0) - Math.max(q.pEd / pmax * L, 3) : X(B) + Math.max(q.pEd / pmax * L, 3)).toFixed(1)},${Y(q.z).toFixed(1)}`).join(" ");
+  g += `<polyline class="pe" points="${env(-1)}"/><polyline class="pe" points="${env(1)}"/>`;
+  g += txt(X(0) - L - 4, Y(z2) + 4, `${fmt(pmax, 1)} kPa`, "end", "em");
+  // trafic
+  const xr = { "À côté du regard": B + Math.min(+I.d || 0.5, cote * 0.7), "Sur la dalle (hors tampon)": xa / 2, "Sur le tampon": B / 2, "À cheval": B - t1 / 2 }[I.pos] ?? B / 2;
+  const xw = X(xr);
+  g += `<line class="qf" x1="${xw}" x2="${xw}" y1="${Y(0) - 26}" y2="${Y(0) - 3}"/><path class="qt" d="M${xw},${Y(0) - 1} l-4,-7 l8,0 z"/>`;
+  g += txt(xw, Y(0) - 29, `${I.mod} · ${fmt(V.Pw, 0)} kN/roue`, xr > B / 2 ? "end" : "middle", "em");
+  // cotes
+  const cx = X(B / 2);
+  g += txt(cx, Y((z1 + z2) / 2) - 6, `hl = ${fmt(V.hl, 2)} m`) + txt(cx, Y((z1 + z2) / 2) + 8, `b = ${fmt(+I.b, 2)} m`);
+  if (ec > 0.05) g += txt(X(B) + 4, Y(ec / 2) + 4, `ec = ${fmt(ec, 2)} m`, "start");
+  g += txt(X(t1 / 2), Y(zb) + 12, `t1 = ${fmt(t1, 2)}`);
+  return `<figcaption>Coupe perpendiculaire aux grands murs</figcaption><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Coupe du regard : hauteur libre ${fmt(V.hl, 2)} m, recouvrement ${fmt(ec, 2)} m, poussée maximale ${fmt(pmax, 1)} kPa">${g}</svg>
+    <div class="legende"><span><i class="l-maco"></i>maçonnerie</span><span><i class="l-beton"></i>béton</span><span><i class="l-pt"></i>poussée de calcul p<sub>Ed</sub></span>${I.nappe === "Oui" ? '<span><i class="l-eau"></i>nappe</span>' : ""}</div>`;
+}
+
+// ---------------------------------------------------------------- colonne résultat
+function resultat(V, I, alerts) {
+  const rows = syntheseRows(V, I);
+  const cell = (r, v) => { const c = verdictClass(v), vide = c === "na" || (c === "warn" && !r); return `<td class="t ${c}" title="${esc(v)}">${vide ? "—" : r >= 99 ? "&gt; 1" : fmt(r, 2)}</td>`; };
+  // Lignes 2 à 4 : un seul chemin de charge entre dans le verdict ; les autres sont affichés pour information
+  const CHEMIN = { 1: "Bande verticale", 2: "Plaque", 3: "Voûte horizontale" };
+  const hors = i => CHEMIN[i] && CHEMIN[i] !== I.chemin;
+  const mur = w => {
+    const r = V["cp_rmax_" + w], ok = V["cp_v_" + w] === "OK";
+    const nom = w === "gm" ? "Grand mur" : "Petit mur", dim = w === "gm" ? `L1 = ${fmt(V.L_gm, 2)} m · t1 = ${fmt(+I.tgm, 2)} m` : `L2 = ${fmt(V.L_pm, 2)} m · t2 = ${fmt(+I.tpm, 2)} m`;
+    return `<div class="mur"><h3>${nom} <small>${dim}</small></h3>
+      <p class="verdict ${ok ? "ok" : "non-ok"}">${ok ? "Vérifié" : "Non vérifié"} — taux ${r >= 99 ? "&gt; 1" : fmt(r, 2)}</p>
+      <div class="jauge${r > 1 ? " depasse" : ""}" aria-hidden="true"><div style="width:${Math.min(r, 1) * 100}%"></div></div>
+      <div class="ligne"><span>Mécanisme gouvernant</span><strong>${esc(V["cp_mech_" + w])}</strong></div></div>`;
+  };
+  const autre = (lab, a, b) => `<tr><td>${lab}</td><td class="t ${verdictClass(a)}">${esc(a.toLowerCase())}</td><td class="t ${verdictClass(b)}">${esc(b.toLowerCase())}</td></tr>`;
+  return `${mur("gm")}${mur("pm")}
+    <div class="groupe"><h3>Méthode complète EN 1996-1-1</h3>
+    <table class="taux"><thead><tr><th>Vérification</th><th>GM</th><th>PM</th></tr></thead><tbody>
+    ${rows.map((r, i) => `<tr${hors(i) ? ' class="hors"' : ""}><td>${esc(r[0])} <span class="ref">${esc(r[1])}</span>${hors(i) ? '<span class="hors-lib">chemin non retenu, pour information</span>' : ""}</td>${cell(r[2], r[4])}${cell(r[3], r[5])}</tr>`).join("")}
+    </tbody></table></div>
+    <div class="groupe"><h3>Autres méthodes</h3><table class="taux"><tbody>
+    ${autre("Prédim. EN 1996-3 §4.5", V.pre_v_gm, V.pre_v_pm)}${autre("Bande verticale classique", V.cl_v_gm, V.cl_v_pm)}
+    </tbody></table></div>
+    <div class="groupe"><h3>Points d'attention</h3>${alerts.map(a => `<p class="note-alerte">${esc(a)}</p>`).join("")}</div>`;
+}
+
 // ---------------------------------------------------------------- rendu complet
 function render() {
   const { V, wheels, slices, pts, alerts } = R, I = state.inputs;
@@ -296,17 +380,11 @@ function render() {
     <div class="tblock"><h3>Hypothèses actives</h3><dl class="hyp">${hypotheses(V, I).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl></div>
     <div class="tblock"><h3>Alertes</h3><ul class="alerts">${alerts.map(a => `<li>${esc(a)}</li>`).join("")}</ul></div>`;
 
-  // Bandeau de verdict et cartouche
-  for (const w of ["gm", "pm"]) {
-    const r = V["cp_rmax_" + w], v = V["cp_v_" + w];
-    const name = w === "gm" ? `Grand mur · L1 = ${fmt(V.L_gm, 2)} m · t1 = ${fmt(+I.tgm, 2)} m` : `Petit mur · L2 = ${fmt(V.L_pm, 2)} m · t2 = ${fmt(+I.tpm, 2)} m`;
-    $("#vc-" + w).innerHTML = `<div class="wn"><span>${esc(name)}</span><span>méthode complète</span></div>
-      <span class="pill ${verdictClass(v)}">${esc(v)}</span>
-      <span class="mech">${esc(V["cp_mech_" + w])}</span>
-      <span class="rate" title="Taux de travail déterminant">${r >= 99 ? "&gt; 1" : fmt(r, 2)}</span>
-      <div class="meter ${r > 1 ? "bad" : ""}" aria-hidden="true"><i style="width:${Math.min(r, 1.5) / 1.5 * 100}%"></i><b></b></div>
-      <div class="others"><span>Prédim. EN 1996-3 : ${esc(V["pre_v_" + w])}</span><span>Bande verticale : ${esc(V["cl_v_" + w])}</span><span>Phase C3 : ${esc(V["cp_v3_" + w])}</span></div>`;
-  }
+  // Colonnes de l'écran : coupe, diagrammes, résultat ; cartouche de la note
+  saisieRecap();
+  $("#coupe").innerHTML = coupe(V, I, slices);
+  $("#diagrammes").innerHTML = `<div class="plots">${plot(pts, "pEd", "Poussée de calcul pEd", "kPa", 1)}${plot(pts, "M", "Moment isostatique M", "kNm/m", 2)}</div>`;
+  $("#resultat").innerHTML = resultat(V, I, alerts);
   for (const k of ["projet", "ref", "ind", "auteur"]) $("#tb-" + k).textContent = I[k] || "·";
   $("#tb-date").textContent = I.date ? new Date(I.date + "T12:00:00").toLocaleDateString("fr-FR") : "·";
   $("#tb-mod").textContent = `${I.mod}, ${I.pos.toLowerCase()}`;
@@ -329,15 +407,6 @@ function run() {
     if (!(e instanceof InputError)) console.error(e);
   }
 }
-
-// ---------------------------------------------------------------- onglets
-function showTab(id) {
-  document.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", String(b.dataset.tab === id)));
-  document.querySelectorAll(".page").forEach(p => (p.hidden = p.dataset.tab !== id));
-  try { localStorage.setItem(KEY + ".tab", id); } catch { /* */ }
-  if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
-}
-document.querySelector(".tabs").addEventListener("click", e => { const b = e.target.closest(".tab"); if (b) showTab(b.dataset.tab); });
 
 // ---------------------------------------------------------------- fichiers
 function download(name, text, type) {
@@ -393,18 +462,15 @@ window.addEventListener("beforeprint", () => {
   if (!st) { st = document.createElement("style"); st.id = "print-page-style"; document.head.appendChild(st); }
   const left = `Regards en maçonnerie v${VERSION} · ${I.ref || ""} ind. ${I.ind || ""}`.replace(/"/g, "'");
   st.textContent = `@page { @bottom-left { content: "${left}"; font: 7pt Arial, sans-serif; color: #555; } @bottom-right { content: "${date}"; font: 7pt Arial, sans-serif; color: #555; } }`;
-  document.querySelectorAll("details.more").forEach(d => { d.dataset.wasOpen = d.open ? "1" : ""; d.open = true; });
+  document.querySelectorAll("details.more, details.deriv").forEach(d => { d.dataset.wasOpen = d.open ? "1" : ""; d.open = true; });
 });
-window.addEventListener("afterprint", () => document.querySelectorAll("details.more").forEach(d => { d.open = d.dataset.wasOpen === "1"; }));
+window.addEventListener("afterprint", () => document.querySelectorAll("details.more, details.deriv").forEach(d => { d.open = d.dataset.wasOpen === "1"; }));
 
 // ---------------------------------------------------------------- démarrage
 function rebuild() { buildSaisie(); buildCoef(); buildCat(); run(); }
-$("#ver").textContent = `v${VERSION}`;
+document.querySelectorAll(".ver").forEach(el => (el.textContent = `v${VERSION}`));
 $("#foot-ver").textContent = `Version ${VERSION} du ${VERSION_DATE} · validée contre ${WORKBOOK}`;
 rebuild();
-let tab = location.hash.slice(1);
-if (!document.querySelector(`.tab[data-tab="${tab}"]`)) { try { tab = localStorage.getItem(KEY + ".tab") || "saisie"; } catch { tab = "saisie"; } }
-showTab(document.querySelector(`.tab[data-tab="${tab}"]`) ? tab : "saisie");
 
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   navigator.serviceWorker.register("./sw.js").then(reg => {

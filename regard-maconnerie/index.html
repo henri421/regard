@@ -12,73 +12,83 @@
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-<div class="wrap">
 
-  <header class="titleblock">
-    <div class="tb-name">
-      <h1>Regards en maçonnerie</h1>
-      <p>Murs enterrés non armés · EN 1996-1-1, EN 1996-3, EN 1997-1 · <span id="ver"></span></p>
-    </div>
-    <div class="tb-cells">
-      <div class="tb-cell"><span class="k">Projet</span><span class="v" id="tb-projet"></span></div>
-      <div class="tb-cell"><span class="k">Référence</span><span class="v" id="tb-ref"></span></div>
-      <div class="tb-cell"><span class="k">Indice</span><span class="v" id="tb-ind"></span></div>
-      <div class="tb-cell"><span class="k">Date</span><span class="v" id="tb-date"></span></div>
-      <div class="tb-cell"><span class="k">Auteur</span><span class="v" id="tb-auteur"></span></div>
-      <div class="tb-cell"><span class="k">Modèle</span><span class="v" id="tb-mod"></span></div>
-    </div>
-  </header>
+<div class="barre noprint">
+  <span>Aedificium · Maçonnerie EC6</span>
+  <a href="https://henri421.github.io/WebAedificium/">Suite Aedificium ↗</a>
+</div>
 
-  <div class="toolbar noprint" role="toolbar" aria-label="Fichier">
+<!-- Cartouche : imprimé en tête de la note de calcul -->
+<header class="titleblock print-only">
+  <div class="tb-name">
+    <h1>Regards en maçonnerie</h1>
+    <p>Murs enterrés non armés · EN 1996-1-1, EN 1996-3, EN 1997-1 · <span class="ver"></span></p>
+  </div>
+  <div class="tb-cells">
+    <div class="tb-cell"><span class="k">Projet</span><span class="v" id="tb-projet"></span></div>
+    <div class="tb-cell"><span class="k">Référence</span><span class="v" id="tb-ref"></span></div>
+    <div class="tb-cell"><span class="k">Indice</span><span class="v" id="tb-ind"></span></div>
+    <div class="tb-cell"><span class="k">Date</span><span class="v" id="tb-date"></span></div>
+    <div class="tb-cell"><span class="k">Auteur</span><span class="v" id="tb-auteur"></span></div>
+    <div class="tb-cell"><span class="k">Modèle</span><span class="v" id="tb-mod"></span></div>
+  </div>
+</header>
+
+<header class="entete noprint">
+  <div>
+    <h1>Regards en maçonnerie <span class="ver"></span></h1>
+    <p class="sous">Murs de regards enterrés en maçonnerie non armée, sous poussée des terres et trafic · EN 1996-1-1, EN 1996-3, EN 1997-1</p>
+    <p class="avertissement">Outil d'aide au calcul : il constate et ne prescrit pas. Les tables normatives sont pré-remplies et à vérifier ; la vérification finale incombe à l'ingénieur du projet.</p>
+  </div>
+  <div class="toolbar" role="toolbar" aria-label="Fichier">
     <button class="btn" id="b-new" type="button">Nouveau</button>
     <button class="btn" id="b-open" type="button">Ouvrir…</button>
     <button class="btn" id="b-save" type="button">Enregistrer</button>
     <button class="btn" id="b-xlsx" type="button">Importer un classeur .xlsx…</button>
-    <span class="sp"></span>
-    <span class="toast" id="toast" role="status" aria-live="polite"></span>
     <button class="btn primary" id="b-print" type="button">Imprimer la note</button>
     <input type="file" id="f-open" accept=".json,application/json" hidden>
     <input type="file" id="f-xlsx" accept=".xlsx,.xlsm" hidden>
+    <span class="toast" id="toast" role="status" aria-live="polite"></span>
   </div>
+</header>
 
-  <div class="error" id="err" role="alert" hidden></div>
+<div class="error noprint" id="err" role="alert" hidden></div>
 
-  <section class="verdicts noprint" aria-label="Verdict de la méthode complète">
-    <article class="wallcard" id="vc-gm"></article>
-    <article class="wallcard" id="vc-pm"></article>
-  </section>
+<main class="cols noprint">
+  <section id="saisie" aria-label="Saisie"></section>
+  <div class="visuels">
+    <figure class="panneau" id="coupe"></figure>
+    <div class="panneau" id="diagrammes"></div>
+  </div>
+  <section id="resultat" aria-label="Résultat"></section>
+</main>
 
-  <nav class="tabs noprint" role="tablist" aria-label="Feuilles de calcul">
-    <button class="tab" role="tab" data-tab="saisie" aria-selected="true"><span class="no">0</span>Saisie</button>
-    <button class="tab" role="tab" data-tab="coef" aria-selected="false"><span class="no">1</span>Coefficients</button>
-    <button class="tab" role="tab" data-tab="cat" aria-selected="false"><span class="no">2</span>Catalogue</button>
-    <button class="tab" role="tab" data-tab="predim" aria-selected="false"><span class="no">3</span>Prédim.</button>
-    <button class="tab" role="tab" data-tab="classique" aria-selected="false"><span class="no">4</span>Classique</button>
-    <button class="tab" role="tab" data-tab="complete" aria-selected="false"><span class="no">5</span>Complète</button>
-    <button class="tab" role="tab" data-tab="synthese" aria-selected="false"><span class="no">6</span>Synthèse</button>
-  </nav>
+<section class="detail" aria-label="Détail du calcul">
+  <h2 class="detail-h noprint">Détail du calcul</h2>
+  <p class="detail-sous noprint">Chaque ligne donne la désignation, le symbole, la valeur par mur, l'unité, la formule et la référence normative. Ce détail forme la note imprimée.</p>
 
-  <main>
-    <section class="page note" id="p-saisie" data-tab="saisie" role="tabpanel">
+  <details class="deriv">
+    <summary>Données d'entrée et valeurs dérivées</summary>
+    <section class="page note" id="p-saisie">
       <div class="page-head" data-head="0_Saisie : données d'entrée et actions"></div>
       <h2>Données d'entrée et actions</h2>
-      <p class="lede">Champs encadrés : saisie. Les autres valeurs sont calculées et mises à jour à chaque modification. Rien ne quitte ce navigateur.</p>
       <div class="scroll"><table class="calc" id="t-saisie"></table></div>
       <div id="saisie-derived"></div>
     </section>
-    <section class="page" id="p-coef" data-tab="coef" role="tabpanel" hidden></section>
-    <section class="page" id="p-cat" data-tab="cat" role="tabpanel" hidden></section>
-    <section class="page note" id="p-predim" data-tab="predim" role="tabpanel" hidden></section>
-    <section class="page note" id="p-classique" data-tab="classique" role="tabpanel" hidden></section>
-    <section class="page note" id="p-complete" data-tab="complete" role="tabpanel" hidden></section>
-    <section class="page note" id="p-synthese" data-tab="synthese" role="tabpanel" hidden></section>
-  </main>
+  </details>
+  <details class="deriv"><summary>Prédimensionnement EN 1996-3 §4.5</summary><section class="page note" id="p-predim"></section></details>
+  <details class="deriv"><summary>Bande verticale isostatique</summary><section class="page note" id="p-classique"></section></details>
+  <details class="deriv"><summary>Méthode complète EN 1996-1-1</summary><section class="page note" id="p-complete"></section></details>
+  <details class="deriv"><summary>Synthèse, hypothèses et alertes</summary><section class="page note" id="p-synthese"></section></details>
+  <details class="deriv"><summary>Tables normatives et coefficients <span class="tag">à vérifier</span></summary><section class="page" id="p-coef"></section></details>
+  <details class="deriv"><summary>Catalogue des matériaux</summary><section class="page" id="p-cat"></section></details>
+</section>
 
-  <footer class="foot noprint">
-    <span>Calcul exécuté localement. Projet enregistré dans ce navigateur et dans les fichiers .json que vous exportez.</span>
-    <span id="foot-ver"></span>
-  </footer>
-</div>
+<footer class="foot noprint">
+  <span>Calcul exécuté localement. Projet enregistré dans ce navigateur et dans les fichiers .json que vous exportez.</span>
+  <span id="foot-ver"></span>
+</footer>
+
 <script type="module" src="js/app.js"></script>
 </body>
 </html>
