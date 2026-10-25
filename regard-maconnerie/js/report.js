@@ -315,10 +315,19 @@ export function hypotheses(V, I) {
   ];
 }
 
+// Au plus 3 decimales, sans zero inutile : « 0,5 » et non « 0,50 ».
 export function fmt(x, d = 2) {
   if (typeof x !== "number") return x ?? "";
   if (!Number.isFinite(x)) return "—";
-  return x.toLocaleString("fr-FR", { minimumFractionDigits: d, maximumFractionDigits: d, useGrouping: false });
+  return x.toLocaleString("fr-FR", { minimumFractionDigits: 0, maximumFractionDigits: Math.min(d, 3), useGrouping: false });
+}
+
+// Taux de travail a deux decimales, arrondi VERS LE VERDICT : 0,999 s'affiche
+// 0,99 (jamais « 1 » a cote d'un verdict favorable) et 1,001 s'affiche 1,01.
+export function fmtTaux(r) {
+  if (typeof r !== "number" || !Number.isFinite(r)) return fmt(r);
+  const v = r <= 1 ? Math.floor(r * 100 + 1e-9) / 100 : Math.ceil(r * 100 - 1e-9) / 100;
+  return fmt(v, 2);
 }
 
 export function resolve(line, V, I) {

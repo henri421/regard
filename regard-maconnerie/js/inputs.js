@@ -55,7 +55,7 @@ export const GROUPS = [
     { name: "chemin", label: "Chemin de charge retenu pour le verdict", type: "select", opts: ["Voûte horizontale", "Bande verticale", "Plaque"], def: "Voûte horizontale" },
     { name: "la", label: "Portée de la voûte horizontale", type: "select", opts: ["Entre axes", "Libre"], def: "Entre axes", note: "entre axes : prudent", ref: "EN 1996-1-1 §6.3.2" },
     { name: "harpe", label: "Angles harpés ou butées capables de la poussée", type: "select", opts: ["Oui", "Non"], def: "Oui", ref: "EN 1996-1-1 §6.3.2" },
-    { name: "kpar", label: "Résistance parallèle / perpendiculaire aux joints", sym: "kpar", type: "num", def: 1.00, note: "1,0 pour éléments pleins" },
+    { name: "kpar", label: "Résistance parallèle / perpendiculaire aux joints", sym: "kpar", type: "num", def: 1.00, note: "1 pour éléments pleins" },
     { name: "pen", label: "Pénétration de canalisation", type: "select", opts: ["Aucune", "Grand mur", "Petit mur", "Les deux"], def: "Aucune", note: "tranches exclues de la voûte" },
     { name: "zp1", label: "Pénétration : profondeur du haut", sym: "zp1", unit: "m", type: "num", def: 1.50, show: v => v.pen !== "Aucune" },
     { name: "zp2", label: "Pénétration : profondeur du bas", sym: "zp2", unit: "m", type: "num", def: 1.90, show: v => v.pen !== "Aucune" },

@@ -2,7 +2,7 @@
 import { compute, InputError } from "./engine.js";
 import { defaultTables, defaultCatalogue, T6, T7, TYPES } from "./tables.js";
 import { GROUPS, FIELDS, defaultInputs, SOIL_NAMES } from "./inputs.js";
-import { SAISIE_DERIVED, PREDIM, CLASSIQUE, COMPLETE, syntheseRows, hypotheses, fmt, resolve, verdictClass } from "./report.js";
+import { SAISIE_DERIVED, PREDIM, CLASSIQUE, COMPLETE, syntheseRows, hypotheses, fmt, fmtTaux, resolve, verdictClass } from "./report.js";
 import { importWorkbook } from "./xlsx-import.js";
 import { VERSION, VERSION_DATE, WORKBOOK } from "./version.js";
 
@@ -313,7 +313,7 @@ function coupe(V, I, slices) {
 // ---------------------------------------------------------------- colonne résultat
 function resultat(V, I, alerts) {
   const rows = syntheseRows(V, I);
-  const cell = (r, v) => { const c = verdictClass(v), vide = c === "na" || (c === "warn" && !r); return `<td class="t ${c}" title="${esc(v)}">${vide ? "—" : r >= 99 ? "&gt; 1" : fmt(r, 2)}</td>`; };
+  const cell = (r, v) => { const c = verdictClass(v), vide = c === "na" || (c === "warn" && !r); return `<td class="t ${c}" title="${esc(v)}">${vide ? "—" : r >= 99 ? "&gt; 1" : fmtTaux(r)}</td>`; };
   // Lignes 2 à 4 : un seul chemin de charge entre dans le verdict ; les autres sont affichés pour information
   const CHEMIN = { 1: "Bande verticale", 2: "Plaque", 3: "Voûte horizontale" };
   const hors = i => CHEMIN[i] && CHEMIN[i] !== I.chemin;
@@ -321,7 +321,7 @@ function resultat(V, I, alerts) {
     const r = V["cp_rmax_" + w], ok = V["cp_v_" + w] === "OK";
     const nom = w === "gm" ? "Grand mur" : "Petit mur", dim = w === "gm" ? `L1 = ${fmt(V.L_gm, 2)} m · t1 = ${fmt(+I.tgm, 2)} m` : `L2 = ${fmt(V.L_pm, 2)} m · t2 = ${fmt(+I.tpm, 2)} m`;
     return `<div class="mur"><h3>${nom} <small>${dim}</small></h3>
-      <p class="verdict ${ok ? "ok" : "non-ok"}">${ok ? "Vérifié" : "Non vérifié"} — taux ${r >= 99 ? "&gt; 1" : fmt(r, 2)}</p>
+      <p class="verdict ${ok ? "ok" : "non-ok"}">${ok ? "Vérifié" : "Non vérifié"} — taux ${r >= 99 ? "&gt; 1" : fmtTaux(r)}</p>
       <div class="jauge${r > 1 ? " depasse" : ""}" aria-hidden="true"><div style="width:${Math.min(r, 1) * 100}%"></div></div>
       <div class="ligne"><span>Mécanisme gouvernant</span><strong>${esc(V["cp_mech_" + w])}</strong></div></div>`;
   };
@@ -365,7 +365,7 @@ function render() {
   // Synthèse
   const rows = syntheseRows(V, I);
   const pill = s => `<span class="pill ${verdictClass(s)}">${esc(s)}</span>`;
-  const rate = r => `<td class="c-val">${fmt(r, 2)}</td>`;
+  const rate = r => `<td class="c-val">${fmtTaux(r)}</td>`;
   $("#p-synthese").innerHTML = `<div class="page-head" data-head="6_Synthese : taux de travail et verdicts"></div><h2>Taux de travail et verdicts</h2>
     <div class="scroll"><table class="calc"><thead><tr><th>Vérification</th><th>Référence</th><th class="c-val">Taux GM</th><th class="c-val">Taux PM</th><th>Verdict GM</th><th>Verdict PM</th></tr></thead><tbody>
     <tr class="sec"><td colspan="6">Méthode complète EN 1996-1-1</td></tr>
