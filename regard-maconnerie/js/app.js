@@ -5,6 +5,7 @@ import { GROUPS, FIELDS, defaultInputs, SOIL_NAMES } from "./inputs.js";
 import { SAISIE_DERIVED, PREDIM, CLASSIQUE, COMPLETE, syntheseRows, hypotheses, fmt, fmtTaux, resolve, verdictClass } from "./report.js";
 import { importWorkbook } from "./xlsx-import.js";
 import { VERSION, VERSION_DATE, WORKBOOK } from "./version.js";
+import { brancherFeuilles, verdictDepuisPage } from "./feuilles/feuilles-dom.js";
 
 const KEY = "webaedificium.regard-maconnerie.v1";
 const FORMAT = "webaedificium/regard-maconnerie";
@@ -34,7 +35,8 @@ function loadState() {
 }
 let state = loadState();
 let R = null;
-const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* stockage indisponible */ } };
+let barre = null; // feuilles de calcul d'un projet de la suite
+const persist = () => { if (barre?.dansUnProjet()) { barre.signaler(); return; } try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* stockage indisponible */ } };
 
 // ---------------------------------------------------------------- utilitaires
 const toStr = v => (v === null || v === undefined) ? "" : (typeof v === "number" ? String(v).replace(".", ",") : String(v));
@@ -471,6 +473,17 @@ function rebuild() { buildSaisie(); buildCoef(); buildCat(); run(); }
 document.querySelectorAll(".ver").forEach(el => (el.textContent = `v${VERSION}`));
 $("#foot-ver").textContent = `Version ${VERSION} du ${VERSION_DATE} · validée contre ${WORKBOOK}`;
 rebuild();
+
+barre = brancherFeuilles({
+  app: "regard",
+  nomApp: "Regards en maçonnerie",
+  conteneur: $("#feuilles"),
+  lire: () => JSON.parse(JSON.stringify(state)),
+  charger: (d) => { state = d === null ? fresh() : normalize(d); rebuild(); },
+  libelle: (chemin) => LABEL[chemin.split("/").at(-1)] ?? "",
+  // En cas d'erreur, l'écran garde le dernier résultat valide : pas de verdict.
+  verdict: () => ($("#err").hidden ? verdictDepuisPage(document) : null),
+});
 
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   navigator.serviceWorker.register("./sw.js").then(reg => {

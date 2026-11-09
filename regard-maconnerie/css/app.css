@@ -311,3 +311,7 @@ footer.foot { max-width: 100rem; margin: 0 auto; color: var(--texte-faible); fon
   details.more > *:not(summary) { display: block; }
   a { color: inherit; text-decoration: none; }
 }
+
+/* Barre des feuilles de calcul (projets de la suite). */
+.feuilles { padding: .5rem 1rem 0; }
+.feuilles:empty { display: none; }
