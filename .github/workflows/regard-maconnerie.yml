@@ -28,6 +28,14 @@ jobs:
       - name: Recette regard-maconnerie (comparaison au classeur)
         working-directory: regard-maconnerie
         run: node tests/run-tests.mjs
+      # Copies generees depuis aedificium-ui a jour (audit du 10/11/2026, R12).
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Copies d'aedificium-ui a jour
+        run: |
+          git clone --depth 1 https://github.com/henri421/aedificium-ui "$RUNNER_TEMP/aedificium-ui"
+          node "$RUNNER_TEMP/aedificium-ui/scripts/copier-projets.mjs" --verif "regard-maconnerie/js/feuilles" projets projets-stockage langue feuilles-dom
 
   publication:
     needs: recette

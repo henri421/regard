@@ -1,4 +1,4 @@
-// GENERE depuis aedificium-ui/src/projets-stockage.ts par _banc-local/copier-projets.mjs.
+// GENERE depuis aedificium-ui/src/projets-stockage.ts par aedificium-ui/scripts/copier-projets.mjs.
 // Ne pas modifier a la main.
 /**
  * Stockage des projets dans le navigateur.

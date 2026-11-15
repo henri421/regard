@@ -1,4 +1,4 @@
-// GENERE depuis aedificium-ui/src/feuilles-dom.ts par _banc-local/copier-projets.mjs.
+// GENERE depuis aedificium-ui/src/feuilles-dom.ts par aedificium-ui/scripts/copier-projets.mjs.
 // Ne pas modifier a la main.
 /**
  * Barre des feuilles de calcul, commune a toutes les apps (etape 9.5).

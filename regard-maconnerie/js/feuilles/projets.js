@@ -1,4 +1,4 @@
-// GENERE depuis aedificium-ui/src/projets.ts par _banc-local/copier-projets.mjs.
+// GENERE depuis aedificium-ui/src/projets.ts par aedificium-ui/scripts/copier-projets.mjs.
 // Ne pas modifier a la main.
 /**
  * Projets de la suite : arborescence, feuilles de calcul et heritage.
@@ -14,7 +14,7 @@
  *
  * Ce module est pur (aucun acces au DOM ni au stockage) et sans import : le
  * hub, qui n'a pas de compilation, en charge une copie dont les types sont
- * retires (`_banc-local/copier-projets.mjs`). Pas d'enum, pas de propriete de
+ * retires (`scripts/copier-projets.mjs`). Pas d'enum, pas de propriete de
  * parametre : le retrait des types doit suffire.
  */
 

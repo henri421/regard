@@ -1,4 +1,4 @@
-// GENERE depuis aedificium-ui/src/langue.ts par _banc-local/copier-projets.mjs.
+// GENERE depuis aedificium-ui/src/langue.ts par aedificium-ui/scripts/copier-projets.mjs.
 // Ne pas modifier a la main.
 /**
  * Langue de la page : francais (par defaut) ou anglais.
