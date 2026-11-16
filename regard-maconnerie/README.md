@@ -67,7 +67,7 @@ Modifier `VERSION` dans `js/version.js` **et** dans `sw.js` (même valeur), puis
 | `js/inputs.js` | Définition des saisies (feuille 0_Saisie) |
 | `js/app.js` | Liaison interface, fichiers projet, impression |
 | `js/xlsx-import.js` | Import local d'un classeur |
-| `lib/xlsx.full.min.js` | SheetJS 0.18.5, chargé seulement à l'import |
+| `lib/xlsx.full.min.js` | SheetJS 0.20.3 (cdn.sheetjs.com), chargé seulement à l'import |
 | `sw.js`, `manifest.webmanifest`, `icons/` | Fonctionnement hors ligne et installation |
 | `tests/`, `tools/` | Recette, générateur du classeur, régénération des scénarios, schéma JSON |
 
